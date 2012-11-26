@@ -1,7 +1,6 @@
-Scientific Python
-=================
+Scientific Python <br><p>Jóan Petur Petersen</p>
+================================================
 
-This is still work in progress.
 
 ---
 
@@ -44,31 +43,19 @@ Finally we'll look at Matploblib, which is a nice 2d plotting library for Python
 
 Python is a high-level general-purpose interpreted programming language [http://en.wikipedia.org/wiki/Python_(programming_language)].
 
-Python and speed (or lack thereof)
-==================================
-
-A very brute mean function:
-
-    !python
-    def calc_mean(list_matrix):
-        """Returns the mean of a matrix given as a list of lists.
-        """
-        total = 0
-        cnt = 0
-        for lst in list_matrix:
-            for number in lst:
-                total += number
-                cnt += 1
-        return (1.*total) / cnt
-
-# Presenter Notes
-
-See more at http://scikit-learn.org/dev/developers/performance.html
 
 ---
 
 Native Python
 =============
+
+# Presenter Notes
+
+This talk assumes you know some python, and that you are familiar with Matlab, or similar
+programs.
+
+So we will look at the subtle differences and pitfalls one might encounter when starting out
+with NumPy.
 
 ---
 
@@ -81,10 +68,10 @@ Let's make a 1000x1000 demo matrix:
 
     !python
     @profile
-    def make_matrix():
+    def make_matrix(N=1000):
         matrix_2d = []
-        for i in range(1000):
-            repeat_me = range(1000)
+        for i in xrange(N):
+            repeat_me = range(N)
             matrix_2d.append(repeat_me)
         return matrix_2d
 
@@ -106,15 +93,16 @@ Python and memory usage
 
 Run the program using a memory profiler:
 
-    >>> python -m memory_profiler test.py
-    
+    >>> python -m memory_profiler profile_make_matrix.py
+    Filename: profile_make_matrix.py
+
     Line #    Mem usage    Increment   Line Contents
     ================================================
          2                             @profile
-         3      6.03 MB      0.00 MB   def make_matrix():
+         3      6.03 MB      0.00 MB   def make_matrix(N=1000):
          4      6.04 MB      0.00 MB       matrix_2d = []
-         5     18.86 MB     12.83 MB       for i in xrange(1000):
-         6     18.88 MB      0.01 MB           repeat_me = range(1000)
+         5     18.86 MB     12.83 MB       for i in xrange(N):
+         6     18.88 MB      0.01 MB           repeat_me = range(N)
          7     18.88 MB      0.00 MB           matrix_2d.append(repeat_me)
          8     18.88 MB      0.00 MB       return matrix_2d
 
@@ -147,6 +135,30 @@ The list contains references to the objects, and it can be hard to figure out th
 memory consumption, because the interpreter tries to reuse references to objects.
 
 Non-native Python code, such as C code, might also allocate memory without Python's knowledge.
+
+---
+
+Python and speed (or lack thereof)
+==================================
+
+A very brute mean function:
+
+    !python
+    def calc_mean(list_matrix):
+        """Returns the mean of a matrix given as a list of lists.
+        """
+        total = 0
+        cnt = 0
+        for lst in list_matrix:
+            for number in lst:
+                total += number
+                cnt += 1
+        return (1.*total) / cnt
+
+# Presenter Notes
+
+See more at http://scikit-learn.org/dev/developers/performance.html
+
 
 ---
 
@@ -203,30 +215,6 @@ line_profiler doc: http://packages.python.org/line_profiler/
 Numpy introduction
 ==================
 
----
-
-Libraries
-=========
-
-Some libaries that can make life easier:
-
-* NumPy (matrix reprensentation, linear algebra, C/C++ code integration)
-* SciPy (optimization, more linear algebra, special functions, FFT, ODE, ...)
-* Scikit-learn (machine learning, supervised/unsupervised, model selection, ...)
-
-Visualization:
-
-* Matplotlib (nice 2d plots, some support for 3d plots, maps)
-* Mayavi (3d plotting)
-<!-- * ...
-.comment * igraph (network plots) -->
-
-Wrap:
-
-* Fortran, C, C++, ...
-* R
-
-And then access to all the other python libraries: os, sys, wxPython, Django, flask, ...
 
 ---
 
@@ -240,6 +228,37 @@ Why should we use NumPy?
 * Computationally faster than using native python lists
 
 Matlab users might find this useful: [http://www.scipy.org/NumPy_for_Matlab_Users](http://www.scipy.org/NumPy_for_Matlab_Users)
+
+
+---
+
+Recreating examples
+===================
+
+    >> python -m memory_profiler profile_make_matrix_numpy.py 
+    Filename: profile_make_matrix_numpy.py
+
+    Line #    Mem usage    Increment   Line Contents
+    ================================================
+         3                             @profile
+         4     11.36 MB      0.00 MB   def make_matrix(N=1000):
+         5     11.37 MB      0.00 MB       row = np.array(range(1000), dtype=np.int32)
+         6     15.21 MB      3.85 MB       return np.tile(row, (1000,1))
+
+And speed:
+
+    In [5]: %prun np.mean(m)
+             4 function calls in 0.003 seconds
+
+       Ordered by: internal time
+
+       ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+            1    0.003    0.003    0.003    0.003 {method 'mean' of 'numpy.ndarray' objects}
+            1    0.000    0.000    0.003    0.003 fromnumeric.py:2299(mean)
+            1    0.000    0.000    0.003    0.003 <string>:1(<module>)
+            1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
 
 ---
 
@@ -280,7 +299,7 @@ isn't really nice for it. But then again; Python is a general purpose language.
 Numpy - references
 ==================
 
-There might be some nasty surprices using NumPy arrays:
+There might be some nasty surprises using NumPy arrays:
 
     >>> import numpy as np
     >>> X = np.array([[1,2],[3,4]])
@@ -303,7 +322,6 @@ Simple trick to avoid this: `Y = 1*X` (makes a copy)
 
 ---
 
-
 Numpy - slicing arrays
 ======================
 
@@ -318,28 +336,13 @@ Numpy - slicing arrays
     [1 2]
     >>> print X[:,0]
     [1 3]
----
-
-Numpy - slicing arrays
-======================
-
-    >>> X = np.array(range(9)).reshape(3,3)
-    >>> print X
-    [[0, 1, 2],
-     [3, 4, 5],
-     [6, 7, 8]])
-    >>> print X[1:, 1:]
-    [[4 5]
-     [7 8]]
-    >>> print X[:1, :1]
-    [[0]]
 
 ---
 
 NumPy - slicing arrays
 ======================
 
-There might be some nasty surprices using NumPy arrays:
+There might be some surprises using NumPy arrays:
 
     >>> import numpy as np
     >>> X = np.array([[1,2],[3,4]])
@@ -361,7 +364,23 @@ So it has become a one dimensional array.
 
 ---
 
-NumPy - more slicing surprices
+Numpy - slicing arrays
+======================
+
+    >>> X = np.array(range(9)).reshape(3,3)
+    >>> print X
+    [[0, 1, 2],
+     [3, 4, 5],
+     [6, 7, 8]])
+    >>> print X[1:, 1:]
+    [[4 5]
+     [7 8]]
+    >>> print X[:1, :1]
+    [[0]]
+
+---
+
+NumPy - more slicing surprises
 ==============================
 
 A slices is a reference to part of the original array.
@@ -455,8 +474,7 @@ IPython is an enhanced Python shell.
 * Profiling code
 * Command history
 
-Install: Enthought, Sage, (Pythonxy)
-
+Enthought has a nice installer for IPython.
 
 ---
 
@@ -466,6 +484,7 @@ IPython magic functions
 * `%hist`: Show command history
 * `%edit`: Open editor and execute code after closing
 * `%prun`: Profile a method call
+* `%paste`: Paste and run from clipboard
 
 * _variable_`?`: Show type and docstring
 * _variable_`??`: Show the code
@@ -503,28 +522,6 @@ IPython help
         is `float64`; for floating point inputs, it is the same as the
     ...
 
----
-
-IPython profiling
-=================
-
-
-    %prun
----
-
-IPython speed optimization
-==========================
-
-Generally:
-
- * Only optimize code that needs to be.
- * Has someone already optimized this problem?
- * Is there a better way of doing it? Another algorithm?
-
-Try to avoid python loops, especially nested loops, and write the code in such a
-way that it uses numpy, scipy, and similar functions instead.
-
-Cython?
 
 ---
 
@@ -542,16 +539,6 @@ Special support for Matplotlib.pylab plots using `-pylab` (`--pylab` since IPyth
 
 Multi-threaded handling of the figures in the background.
 
----
-
-Scikit learn
-============
-
-
----
-
-Application examples
-====================
 
 ---
 
@@ -559,9 +546,38 @@ Application examples
 Summary
 =======
 
+Libraries
+=========
+
+Some libaries that can make life easier:
+
+* NumPy (matrix reprensentation, linear algebra, C/C++ code integration)
+* SciPy (optimization, more linear algebra, special functions, FFT, ODE, ...)
+* Scikit-learn (machine learning, supervised/unsupervised, model selection, ...)
+
+Visualization:
+
+* Matplotlib (nice 2d plots, some support for 3d plots, maps)
+* Mayavi (3d plotting)
+
 With python you have
 
 * access to a large library of well tested methods for linear algebra, optimization, machine learning, and so on.
+
+
+<!-- * ...
+.comment * igraph (network plots) -->
+
+# Presenter Notes
+
+Wrap:
+
+* Fortran, C, C++, ...
+* R
+
+And then access to all the other python libraries: os, sys, wxPython, Django, flask, ...
+
+
 
 ---
 
@@ -570,4 +586,28 @@ Resources
 =========
 
 * http://www.scipy.org/Tentative_NumPy_Tutorial
+* 
+
+
+# Presenter Notes
+
+I'll just drop these:
+
+Application examples
+====================
+
+IPython speed optimization
+==========================
+
+Generally:
+
+ * Only optimize code that needs to be.
+ * Has someone already optimized this problem?
+ * Is there a better way of doing it? Another algorithm?
+
+Try to avoid python loops, especially nested loops, and write the code in such a
+way that it uses numpy, scipy, and similar functions instead.
+
+Cython?
+
 
