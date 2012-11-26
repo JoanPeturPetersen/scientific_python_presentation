@@ -4,6 +4,7 @@ Scientific Python
 This is still work in progress.
 
 ---
+
 Background
 ==========
 
@@ -20,12 +21,14 @@ Background
 Python can help you in all these steps from the beginning to the end, and it can
 be done to a large part in and efficient and fast way.
 
-Overview
-========
+---
+
+Outline
+=======
 
  * Native Python memory and speed
- * Numpy (matrix manipulation)
- * Matplotlib (visualization)
+ * Numpy introduction (matrix manipulation)
+ * Ipython and Matplotlib (visualization)
 
 # Presenter Notes
 
@@ -41,59 +44,31 @@ Finally we'll look at Matploblib, which is a nice 2d plotting library for Python
 
 Python is a high-level general-purpose interpreted programming language [http://en.wikipedia.org/wiki/Python_(programming_language)].
 
----
-Libraries
-=========
+Python and speed (or lack thereof)
+==================================
 
-Some libaries that can make life easier:
+A very brute mean function:
 
-* NumPy (matrix reprensentation, linear algebra, C/C++ code integration)
-* SciPy (optimization, more linear algebra, special functions, FFT, ODE, ...)
-* Scikit-learn (machine learning, supervised/unsupervised, model selection, ...)
-
-Visualization:
-
-* Matplotlib (nice 2d plots, some support for 3d plots, maps)
-* Mayavi (3d plotting)
-<!-- * ...
-.comment * igraph (network plots) -->
-
-Wrap:
-
-* Fortran, C, C++, ...
-* R
-
-And then access to all the other python libraries: os, sys, wxPython, Django, flask, ...
-
----
-
-Python and memory usage
-=======================
-
-Use `sys.getsizeof(object)` to find the actual memory used by an object:
-
-    >>> import sys
-    >>> a = [1]
-    >>> sys.getsizeof(a)
-    40
-    >>> sys.getsizeof(a[0])
-    12
-    >>> sys.getsizeof(range(1))
-    40
-    >>> sys.getsizeof(range(2))
-    44
-    >>> sys.getsizeof(range(3))
-    48
-    >>> sys.getsizeof(range(1000))
-    4036
+    !python
+    def calc_mean(list_matrix):
+        """Returns the mean of a matrix given as a list of lists.
+        """
+        total = 0
+        cnt = 0
+        for lst in list_matrix:
+            for number in lst:
+                total += number
+                cnt += 1
+        return (1.*total) / cnt
 
 # Presenter Notes
-`sys.getsizeof()` returns the size of memory footprint in bytes of objects.
-In some python versions container objects it will return the size of only the container object.
-The list contains references to the objects, and it can be hard to figure out the
-memory consumption, because the interpreter tries to reuse references to objects.
 
-Non-native Python code, such as C code, might also allocate memory without Python's knowledge.
+See more at http://scikit-learn.org/dev/developers/performance.html
+
+---
+
+Native Python
+=============
 
 ---
 
@@ -145,26 +120,33 @@ Run the program using a memory profiler:
 
 ---
 
-Python and speed (or lack thereof)
-==================================
+Python and memory usage
+=======================
 
-A very brute mean function:
+Use `sys.getsizeof(object)` to find the actual memory used by an object:
 
-    !python
-    def calc_mean(list_matrix):
-        """Returns the mean of a matrix given as a list of lists.
-        """
-        total = 0
-        cnt = 0
-        for lst in list_matrix:
-            for number in lst:
-                total += number
-                cnt += 1
-        return (1.*total) / cnt
+    >>> import sys
+    >>> a = [1]
+    >>> sys.getsizeof(a)
+    40
+    >>> sys.getsizeof(a[0])
+    12
+    >>> sys.getsizeof(range(1))
+    40
+    >>> sys.getsizeof(range(2))
+    44
+    >>> sys.getsizeof(range(3))
+    48
+    >>> sys.getsizeof(range(1000))
+    4036
 
 # Presenter Notes
+`sys.getsizeof()` returns the size of memory footprint in bytes of objects.
+In some python versions container objects it will return the size of only the container object.
+The list contains references to the objects, and it can be hard to figure out the
+memory consumption, because the interpreter tries to reuse references to objects.
 
-See more at http://scikit-learn.org/dev/developers/performance.html
+Non-native Python code, such as C code, might also allocate memory without Python's knowledge.
 
 ---
 
@@ -217,16 +199,48 @@ http://scikit-learn.org/dev/developers/performance.html
 line_profiler doc: http://packages.python.org/line_profiler/
 
 ---
+
+Numpy introduction
+==================
+
+---
+
+Libraries
+=========
+
+Some libaries that can make life easier:
+
+* NumPy (matrix reprensentation, linear algebra, C/C++ code integration)
+* SciPy (optimization, more linear algebra, special functions, FFT, ODE, ...)
+* Scikit-learn (machine learning, supervised/unsupervised, model selection, ...)
+
+Visualization:
+
+* Matplotlib (nice 2d plots, some support for 3d plots, maps)
+* Mayavi (3d plotting)
+<!-- * ...
+.comment * igraph (network plots) -->
+
+Wrap:
+
+* Fortran, C, C++, ...
+* R
+
+And then access to all the other python libraries: os, sys, wxPython, Django, flask, ...
+
+---
+
 NumPy
 =====
 
 Why should we use NumPy?
 
 * NumPy arrays are more compact than python lists
-* Large libary of implemeted functions (tested)
-* Computationally faster than python lists
+* Large library of implemeted functions
+* Computationally faster than using native python lists
 
 Matlab users might find this useful: [http://www.scipy.org/NumPy_for_Matlab_Users](http://www.scipy.org/NumPy_for_Matlab_Users)
+
 ---
 
 NumPy array
@@ -252,7 +266,43 @@ If we have `from numpy import *` then we might write it as:
     >>> from numpy import *
     >>> X = matrix('1,2; 3,4')
 
+# Presenter Notes
+
+But normally I don't use the matrix class. One of the reasons being that I just
+started with the array class, and this is also what most of the Numpy methods
+will return.
+
+It seems like Numpy is a kind of second grade citizen in Python. The notation
+isn't really nice for it. But then again; Python is a general purpose language.
+
 ---
+
+Numpy - references
+==================
+
+There might be some nasty surprices using NumPy arrays:
+
+    >>> import numpy as np
+    >>> X = np.array([[1,2],[3,4]])
+    >>> Y = X
+    >>> print X
+    [[1 2]
+     [3 4]]
+    >>> print Y
+    [[1 2]
+     [3 4]]
+    >>> X[0,0] = 0
+    >>> print X
+    [[0 2]
+     [3 4]]
+    >>> print Y
+    [[0 2]
+     [3 4]]    
+
+Simple trick to avoid this: `Y = 1*X` (makes a copy)
+
+---
+
 
 Numpy - slicing arrays
 ======================
@@ -308,6 +358,7 @@ So it has become a one dimensional array.
     >>> Y1 = Y[:,0]
     >>> Y1.shape
     (2, 1)
+
 ---
 
 NumPy - more slicing surprices
@@ -334,6 +385,26 @@ A slices is a reference to part of the original array.
 Numpy - striding arrays
 =======================
 
+    >>> X = np.array(range(25)).reshape(5,5)
+    >>> print X
+    [[ 0  1  2  3  4]
+     [ 5  6  7  8  9]
+     [10 11 12 13 14]
+     [15 16 17 18 19]
+     [20 21 22 23 24]]
+    >>> print X[:,::2]
+    [[ 0  2  4]
+     [ 5  7  9]
+     [10 12 14]
+     [15 17 19]
+     [20 22 24]]
+    >>> print X[:,1::2]
+    [[ 1  3]
+     [ 6  8]
+     [11 13]
+     [16 18]
+     [21 23]]
+
 
 # Presenter Notes
 
@@ -342,35 +413,37 @@ A video here: https://www.youtube.com/watch?v=7vcjjN9eNvs
 
 ---
 
-Numpy - references
-==================
-
-There might be some nasty surprices using NumPy arrays:
-
-    >>> import numpy as np
-    >>> X = np.array([[1,2],[3,4]])
-    >>> Y = X
-    >>> print X
-    [[1 2]
-     [3 4]]
-    >>> print Y
-    [[1 2]
-     [3 4]]
-    >>> X[0,0] = 0
-    >>> print X
-    [[0 2]
-     [3 4]]
-    >>> print Y
-    [[0 2]
-     [3 4]]    
-
-Simple trick to avoid this: `Y = 1*X` (makes a copy)
-
----
 
 Numpy - working with indices
 ============================
 
+    >>> X = np.array(range(25)).reshape(5,5)
+    >>> print X
+    [[ 0  1  2  3  4]
+     [ 5  6  7  8  9]
+     [10 11 12 13 14]
+     [15 16 17 18 19]
+     [20 21 22 23 24]]
+    >>> B = X % 3 == 0
+    >>> print B
+    [[ True False False  True False]
+     [False  True False False  True]
+     [False False  True False False]
+     [ True False False  True False]
+     [False  True False False  True]]
+    >>> X[B] = 0
+    >>> print X
+    [[ 0  1  2  0  4]
+     [ 5  0  7  8  0]
+     [10 11  0 13 14]
+     [ 0 16 17  0 19]
+     [20  0 22 23  0]]
+
+
+---
+
+Ipython and Matplotlib
+======================
 
 ---
 IPython
