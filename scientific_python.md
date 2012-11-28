@@ -232,6 +232,21 @@ Matlab users might find this useful: [http://www.scipy.org/NumPy_for_Matlab_User
 
 ---
 
+
+Recreating examples
+===================
+
+We create the same 1000x1000 matrix with Numpy:
+
+    import numpy as np
+
+    def make_matrix(N=1000):
+        row = np.array(range(1000), dtype=np.int32)
+        return np.tile(row, (1000,1))
+
+---
+
+
 Recreating examples
 ===================
 
@@ -579,14 +594,6 @@ And then access to all the other python libraries: os, sys, wxPython, Django, fl
 
 
 
----
-
-
-Resources
-=========
-
-* http://www.scipy.org/Tentative_NumPy_Tutorial
-* 
 
 
 # Presenter Notes
@@ -610,4 +617,10 @@ way that it uses numpy, scipy, and similar functions instead.
 
 Cython?
 
+
+Resources
+=========
+
+* http://www.scipy.org/Tentative_NumPy_Tutorial
+* 
 
