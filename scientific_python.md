@@ -176,6 +176,7 @@ Python and speed (or lack thereof)
             1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
 
 ---
+
 IPython line profiler
 =====================
 
@@ -206,6 +207,11 @@ line_profiler can report per line.
 
 # Presenter Notes
 
+It is interesting to note how the innermost loop takes the most of the time.
+Each line in the inner loop accounts for almost 1/3 of the total execution time
+each.
+
+Scikit has a nice page on optimization:
 http://scikit-learn.org/dev/developers/performance.html
 
 line_profiler doc: http://packages.python.org/line_profiler/
@@ -227,8 +233,14 @@ Why should we use NumPy?
 * Large library of implemeted functions
 * Computationally faster than using native python lists
 
-Matlab users might find this useful: [http://www.scipy.org/NumPy_for_Matlab_Users](http://www.scipy.org/NumPy_for_Matlab_Users)
 
+<br>
+
+Getting started
+---------------
+
+* Matlab users: [http://www.scipy.org/NumPy_for_Matlab_Users](http://www.scipy.org/NumPy_for_Matlab_Users)
+* Tutorial: [http://www.scipy.org/Tentative_NumPy_Tutorial](http://www.scipy.org/Tentative_NumPy_Tutorial)
 
 ---
 
@@ -273,7 +285,12 @@ And speed:
             1    0.000    0.000    0.003    0.003 <string>:1(<module>)
             1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
 
+# Presenter Notes
 
+Note here that we specify the type for the hole array. Numpy arrays are
+homogeneous, that is all entries have the same type. This saves all the spaced
+used for keeping each element's type as in the list of lists simple type of
+matrix.
 
 ---
 
@@ -301,6 +318,8 @@ If we have `from numpy import *` then we might write it as:
     >>> X = matrix('1,2; 3,4')
 
 # Presenter Notes
+
+The NumPy matrix is always 2D, and retains its 2D nature through operations.
 
 But normally I don't use the matrix class. One of the reasons being that I just
 started with the array class, and this is also what most of the Numpy methods

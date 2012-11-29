@@ -463,7 +463,11 @@ Line #      Hits         Time  Per Hit   % Time  Line Contents
             <header><h1>Presenter Notes</h1></header>
             <section>
             
-              <p>http://scikit-learn.org/dev/developers/performance.html</p>
+              <p>It is interesting to note how the innermost loop takes the most of the time.
+Each line in the inner loop accounts for almost 1/3 of the total execution time
+each.</p>
+<p>Scikit has a nice page on optimization:
+http://scikit-learn.org/dev/developers/performance.html</p>
 <p>line_profiler doc: http://packages.python.org/line_profiler/</p>
             
             </section>
@@ -523,7 +527,12 @@ Line #      Hits         Time  Per Hit   % Time  Line Contents
 <li>Large library of implemeted functions</li>
 <li>Computationally faster than using native python lists</li>
 </ul>
-<p>Matlab users might find this useful: <a href="http://www.scipy.org/NumPy_for_Matlab_Users">http://www.scipy.org/NumPy_for_Matlab_Users</a></p></section>
+<p><br></p>
+<h2>Getting started</h2>
+<ul>
+<li>Matlab users: <a href="http://www.scipy.org/NumPy_for_Matlab_Users">http://www.scipy.org/NumPy_for_Matlab_Users</a></li>
+<li>Tutorial: <a href="http://www.scipy.org/Tentative_NumPy_Tutorial">http://www.scipy.org/Tentative_NumPy_Tutorial</a></li>
+</ul></section>
             
           </div>
           <div class="presenter_notes">
@@ -610,12 +619,18 @@ Line #    Mem usage    Increment   Line Contents
         1    0.000    0.000    0.003    0.003 fromnumeric.py:2299(mean)
         1    0.000    0.000    0.003    0.003 &lt;string&gt;:1(&lt;module&gt;)
         1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
-</code></pre></section>
+</code></pre>
+</section>
             
           </div>
           <div class="presenter_notes">
             <header><h1>Presenter Notes</h1></header>
             <section>
+            
+              <p>Note here that we specify the type for the hole array. Numpy arrays are
+homogeneous, that is all entries have the same type. This saves all the spaced
+used for keeping each element's type as in the list of lists simple type of
+matrix.</p>
             
             </section>
           </div>
@@ -663,7 +678,8 @@ Line #    Mem usage    Increment   Line Contents
             <header><h1>Presenter Notes</h1></header>
             <section>
             
-              <p>But normally I don't use the matrix class. One of the reasons being that I just
+              <p>The NumPy matrix is always 2D, and retains its 2D nature through operations.</p>
+<p>But normally I don't use the matrix class. One of the reasons being that I just
 started with the array class, and this is also what most of the Numpy methods
 will return.</p>
 <p>It seems like Numpy is a kind of second grade citizen in Python. The notation
